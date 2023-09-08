@@ -1,6 +1,6 @@
 FROM openjdk:11
 EXPOSE 8080
-ADD /var/jenkins_home/workspace/devops-automation/target/devops-automation.jar devops-automation.jar
+ADD target/devops-automation.jar devops-automation.jar
 ENTRYPOINT ["java","-jar","/devops-automation.jar"]
 
 
