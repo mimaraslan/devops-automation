@@ -1,14 +1,18 @@
 pipeline {
+
     agent any
+
     tools{
         maven 'maven_3_9_4'
     }
+
+
     stages{
+
         stage('Build Maven'){
             steps{
                 checkout([$class: 'GitSCM', branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mimaraslan/devops-automation']]])
-               sh 'mvn --version'
-               sh 'mvn clean install'
+                sh 'mvn clean install'
             }
         }
         stage('Build docker image'){
@@ -21,7 +25,7 @@ pipeline {
         stage('Push image to Hub'){
             steps{
                 script{
-                   withCredentials([string(credentialsId: 'dockerhubpwd', variable: 'dockerhubpwd')]) {
+                   withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
                    sh 'docker login -u mimaraslan -p ${dockerhubpwd}'
                     }
                    sh 'docker push mimaraslan/devops-automation'
@@ -37,4 +41,7 @@ pipeline {
 
         }
     }
+
+
+
 }
