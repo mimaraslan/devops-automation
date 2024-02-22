@@ -1,7 +1,7 @@
 pipeline {
     agent any
     tools{
-        maven 'maven_3_9_4'
+        maven 'Maven3'
     }
     stages{
         stage('Build Maven'){
@@ -24,7 +24,7 @@ pipeline {
         stage('Push image to Hub'){
             steps{
                 script{
-                    withCredentials([string(credentialsId: 'dockerhub-pwd', variable: 'dockerhubpwd')]) {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
                 /*
                     withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials',
                     usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
@@ -32,21 +32,33 @@ pipeline {
                         bat 'docker login --username $USERNAME --password-stdin $PASSWORD'
                         bat "echo ${PASSWORD} | docker login -u ${USERNAME} --password-stdin"
                 */
-                    bat 'echo docker login -u mimaraslan -p ${dockerhubpwd}'
-                    bat 'docker push mimaraslan/devops-automation:latest'
+                    //sh 'echo docker login -u mimaraslan -p ${dockerhub}'
+                    //sh 'docker push mimaraslan/devops-automation:latest'
+                     bat 'echo docker login -u mimaraslan -p ${dockerhub}'
+                     bat 'docker push mimaraslan/devops-automation:latest'
                     }
                 }
+            }
+        }
+
+        stage ('Cleanup Artifacts') {
+           steps {
+               script {
+                    withCredentials([string(credentialsId: 'dockerhub', variable: 'dockerhub')]) {
+                  //  bat 'echo docker login -u mimaraslan -p ${dockerhub}'
+                    bat 'docker rmi mimaraslan/devops-automation:latest'
+                    }
+               }
             }
         }
 
         stage('Deploy to k8s'){
             steps{
                 script{
-                    kubernetesDeploy (configs: 'deploymentservice.yaml', kubeconfigId: 'k8sconfigpwd')
+                    kubernetesDeploy (configs: 'deploymentservice.yaml', kubeconfigId: 'k8sconfig')
                 }
             }
         }
-
 
     }
 }

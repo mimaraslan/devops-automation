@@ -1,7 +1,12 @@
-FROM openjdk:11
+FROM openjdk:17
 #VOLUME /tmp
+
+## projenin calisacagi ic port
 EXPOSE 8080
+
 ADD target/*.jar devops-automation.jar
+
+## Container icin projedeki JAR dosyasi  calistiriliyor
 ENTRYPOINT ["java","-jar","/devops-automation.jar"]
 
 
